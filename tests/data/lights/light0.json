@@ -1,6 +1,6 @@
 {
-    "name": "light_0",
-    "mapping": {
-        "red": 1, "green": 2, "blue": 3, "fade": 4 
+    "name": "north",
+    "map": {
+        "red": 2, "green": 3, "blue": 4, "intensity": 4 
     }
 }

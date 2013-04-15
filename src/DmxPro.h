@@ -26,6 +26,8 @@ public:
     static Handle<Value> blackout(const Arguments& args);
     static Handle<Value> set     (const Arguments& args);
     static Handle<Value> get     (const Arguments& args);
+    static Handle<Value> queue   (const Arguments& args);
+    static Handle<Value> flush   (const Arguments& args);
     static Handle<Value> wait    (const Arguments& args);
     
 protected:
@@ -35,7 +37,7 @@ private:
     DmxPro(Handle<Object> wrapper);
     static Persistent<FunctionTemplate> constructor_template;    
     
-    bool flush();
+    bool drain();
     
     unsigned char saved [DMX_UNIVERSE_SIZE];
     unsigned char state [DMX_UNIVERSE_SIZE];

@@ -46,6 +46,8 @@ DmxPro::init(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "blackout", blackout);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "set"     , set);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "get"     , get);
+    NODE_SET_PROTOTYPE_METHOD(constructor_template, "queue"   , queue);
+    NODE_SET_PROTOTYPE_METHOD(constructor_template, "flush"   , flush);
     NODE_SET_PROTOTYPE_METHOD(constructor_template, "wait"    , wait);
     
     target->Set(String::New("io"), constructor_template->GetFunction());
@@ -121,6 +123,8 @@ DmxPro::open(const Arguments& args) {
         return scope.Close(Boolean::New(false));
     }
     
+    //printf("io::open() %s\n", dev.c_str());
+    
     return scope.Close(Boolean::New( serial_open(dmx->port, dev.c_str()) == SERIAL_OK ));
 }
 
@@ -188,7 +192,7 @@ DmxPro::write(const Arguments& args) {
         
     memcpy(dmx->state, bytes, size);
                     
-    return scope.Close(Boolean::New(dmx->flush()));
+    return scope.Close(Boolean::New(dmx->drain()));
 
 } 
 
@@ -213,7 +217,7 @@ DmxPro::blackout(const Arguments& args) {
         dmx->bo = true;
     }   
     
-    return scope.Close(Boolean::New(dmx->flush()));
+    return scope.Close(Boolean::New(dmx->drain()));
     
 }
 
@@ -240,7 +244,7 @@ DmxPro::set(const Arguments& args) {
     
     dmx->state[pos%DMX_UNIVERSE_SIZE] = (val&0xFF);
 
-    return scope.Close(Boolean::New(dmx->flush()));
+    return scope.Close(Boolean::New(dmx->drain()));
     
 }
 
@@ -270,6 +274,48 @@ DmxPro::get(const Arguments& args) {
 }
 
 Handle<Value>
+DmxPro::queue(const Arguments& args) {   
+    HandleScope scope;
+    Local<Object> obj = args.This();
+    DmxPro* dmx = ObjectWrap::Unwrap<DmxPro>(obj);
+    int pos=0,val=0;
+    
+    if (dmx->port == NULL) {
+        fprintf(stderr, "io::queue() not opened, can not queue\n");
+        return scope.Close(Boolean::New(false));
+    }
+    
+    if (args.Length() < 2) {
+        fprintf(stderr, "io::queue() requires two arguments (channel, value)\n");
+        return scope.Close(Boolean::New(false));
+    }
+    
+    
+    pos = args[0]->Int32Value();
+    val = args[1]->Int32Value();
+    
+    dmx->state[pos%DMX_UNIVERSE_SIZE] = (val&0xFF);
+
+    return scope.Close(Boolean::New(true));
+    
+}
+
+Handle<Value>
+DmxPro::flush(const Arguments& args) {   
+    HandleScope scope;
+    Local<Object> obj = args.This();
+    DmxPro* dmx = ObjectWrap::Unwrap<DmxPro>(obj);
+    
+    if (dmx->port == NULL) {
+        fprintf(stderr, "io::set() not opened, can not flush\n");
+        return scope.Close(Boolean::New(false));
+    }
+    
+    return scope.Close(Boolean::New(dmx->drain()));
+    
+}
+
+Handle<Value>
 DmxPro::wait(const Arguments& args) {   
     HandleScope scope;
     //Local<Object> obj = args.This();    
@@ -288,7 +334,7 @@ DmxPro::wait(const Arguments& args) {
     
 }
 bool
-DmxPro::flush() {
+DmxPro::drain() {
 
     int           size = DMX_UNIVERSE_SIZE;
     unsigned char header[DMX_PRO_HEADER_SIZE];
@@ -300,27 +346,27 @@ DmxPro::flush() {
     header[3] = (size >> 8)&0xFF;
     
     if (port == NULL) {
-        fprintf(stderr, "flush() aborted, invalid state\n");
+        fprintf(stderr, "drain() aborted, invalid state\n");
         return false;
     }
     
     if (!serial_isopen(port)) {
-        fprintf(stderr, "flush() port not ready\n");
+        fprintf(stderr, "drain() port not ready\n");
         return false;
     }
     
     if (serial_write(port, header, DMX_PRO_HEADER_SIZE) != DMX_PRO_HEADER_SIZE) {
-        fprintf(stderr, "flush() header data truncated\n");
+        fprintf(stderr, "drain() header data truncated\n");
         return false;
     }
 
     if (serial_write(port, state, DMX_UNIVERSE_SIZE) != DMX_UNIVERSE_SIZE) {
-        fprintf(stderr, "flush() message data truncated\n");
+        fprintf(stderr, "drain() message data truncated\n");
         return false;
     }
     
     if (serial_write(port, &eom, 1) != 1) {
-        fprintf(stderr, "flush() message failed\n");
+        fprintf(stderr, "drain() message failed\n");
         return false;
     }
          
