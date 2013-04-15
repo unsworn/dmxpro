@@ -1,0 +1,1 @@
+dmxpro=require("build/Release/dmxpro.node")
