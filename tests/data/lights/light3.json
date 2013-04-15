@@ -1,0 +1,6 @@
+{
+    "name": "light_3",
+    "mapping": {
+        "red": 13, "green": 14, "blue": 15, "fade": 16 
+    }
+}
