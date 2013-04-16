@@ -209,6 +209,8 @@ var dmxpro = {
             configs: {},
             interval: null,
             lasttick: 0,
+            colorspace: "rgb",
+            scale: 1.0,
             lights: {}
         };
     },
@@ -228,6 +230,12 @@ var dmxpro = {
         } else {
             if (!dmx.io.open())
                 throw "Could not open device! (autoselect mode)";
+        } 
+        if (typeof conf.colorspace !== "undefined") {
+            dmx.colorspace = conf.colorspace;        
+        }
+        if (typeof conf.range !== "undefined") {
+            dmx.scale = 1.0/conf.range;
         }
         if (typeof conf.lights !== "undefined") {
             light_path = _path.dirname(path) + "/" + conf.lights;
@@ -274,9 +282,23 @@ var dmxpro = {
             dmx.io.queue(i, 0);
         dmx.io.flush();
     },
+    // handle dmx pseudo message
+    message: function(dmx, m) {
+        var light=null, color=null, fade=null;
+        
+        if (typeof m.light == "undefined")
+            return ;
+        if (typeof m.color == "undefined")
+            return ;
+        
+        if (typeof m.fade !== "undefined")
+            dmxpro.color(dmx, m.light, m.color.red, m.color.green, m.color.blue, m.fade)
+        else
+            dmxpro.color(dmx, m.light, m.color.red, m.color.green, m.color.blue)
+    },
     // set light color, with optional fade time
-    color: function(dmx, light_name, red, green, blue, fade_time) {
-        var fade,c,light = dmx.lights[light_name]        
+    color: function(dmx, light_name, _red, _green, _blue, fade_time) {
+        var fade,c,red=_red*dmx.scale, green=_green*dmx.scale, blue=_blue*dmx.scale,light=dmx.lights[light_name]        
         if (typeof fade_time == "undefined" || dmx.interval == null) {   
             c = dmxchannel.rgb(light, red, green, blue);
             dmxchannel.post(dmx, c);
@@ -288,8 +310,8 @@ var dmxpro = {
         return ;
     },
     // set light intensity with current color, with optional fade time
-    intensity: function(dmx, light_name, intensity, fade_time) {
-        var fade,i,light = dmx.lights[light_name]        
+    intensity: function(dmx, light_name, _intensity, fade_time) {
+        var fade,i,intensity=_intensity*dmx.scale,light=dmx.lights[light_name]        
         if (typeof light.map["intensity"] == "undefined") {
             i = dmxchannel.read(light)
             return dmxpro.color(dmx, light_name, i.red * intensity, i.green * intensity, i.blue * intensity, fade_time);
