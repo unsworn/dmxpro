@@ -1,6 +1,0 @@
-{
-    "name": "east",
-    "mapping": {
-        "red": 5, "green": 6, "blue": 7, "fade": 8 
-    }
-}

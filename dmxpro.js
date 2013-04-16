@@ -240,7 +240,7 @@ var dmxpro = {
             console.log("dmxpro.setup() " + Object.keys(dmx.lights).length + " lights in universe")
         }
         return true
-    },
+    },    
     // start universe ticks
     start: function(dmx) {
         if (dmx.interval == null) { 
@@ -261,9 +261,18 @@ var dmxpro = {
         }
         dmx.io = null
     },
+    lights: function(dmx) {
+        return Object.keys(dmx.lights);
+    },
     // makes everything black, or white if already black (it's a toggle)
     blackout: function(dmx) {
         dmx.io.blackout()
+    },
+    black: function(dmx) {
+        var i=0;
+        for (i=0 ; i < 512 ; i++)
+            dmx.io.queue(i, 0);
+        dmx.io.flush();
     },
     // set light color, with optional fade time
     color: function(dmx, light_name, red, green, blue, fade_time) {
