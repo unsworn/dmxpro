@@ -281,6 +281,10 @@ var dmxpro = {
     // set light intensity with current color, with optional fade time
     intensity: function(dmx, light_name, intensity, fade_time) {
         var fade,i,light = dmx.lights[light_name]        
+        if (typeof light.map["intensity"] == "undefined") {
+            i = dmxchannel.read(light)
+            return dmxpro.color(dmx, light_name, i.red * intensity, i.green * intensity, i.blue * intensity, fade_time);
+        }        
         if (typeof fade_time == "undefined" || dmx.interval == null) {   
             i = dmxchannel.intensity(light, intensity)
             dmxchannel.post(dmx, i);

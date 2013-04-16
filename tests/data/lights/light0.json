@@ -1,6 +1,6 @@
 {
     "name": "north",
     "map": {
-        "red": 2, "green": 3, "blue": 4, "intensity": 4 
+        "red": 2, "green": 3, "blue": 4 
     }
 }
