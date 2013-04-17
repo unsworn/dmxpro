@@ -312,13 +312,8 @@ var dmxpro = {
                     if (typeof color[prop] !== "undefined")
                         c[prop] = (color[prop] * dmx.scale); 
                 });
-    
-                if (typeof m.fade !== "undefined") {
-                    dmxpro.color(dmx, m.light, c.red, c.green, c.blue, m.fade)
-                } else {
-                    ch = dmxchannel.rgb(light, c.red, c.green, c.blue);
-                    dmxchannel.post(dmx, ch);                
-                }                
+                ch = dmxchannel.rgb(light, c.red, c.green, c.blue);
+                dmxchannel.post(dmx, ch);
             } else {
                 console.log("No light named " + light_name + " in universe");
             }
