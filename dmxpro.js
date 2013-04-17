@@ -310,7 +310,7 @@ var dmxpro = {
     
                 Object.keys(c).forEach(function(prop, index, obj) {
                     if (typeof color[prop] !== "undefined")
-                        obj[prop] = color[prop];
+                        c[prop] = color[prop];
                 });
     
                 if (typeof m.fade !== "undefined") {
@@ -319,6 +319,8 @@ var dmxpro = {
                     ch = dmxchannel.rgb(light, c.red, c.green, c.blue);
                     dmxchannel.post(dmx, ch);                
                 }                
+            } else {
+                console.log("No light named " + light_name + " in universe");
             }
         });
         dmx.io.flush();
