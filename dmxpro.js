@@ -284,17 +284,40 @@ var dmxpro = {
     },
     // handle dmx pseudo message
     message: function(dmx, m) {
-        var light=null, color=null, fade=null;
+        var light=null,color=null,c;
         
-        if (typeof m.light == "undefined")
+        if (typeof m.light == "undefined") {
+            console.log("message struct missing light property, aborting!")
             return ;
-        if (typeof m.color == "undefined")
+        }
+        if (typeof m["color"] != "undefined")            
+            color = m["color"];
+        else if (typeof m["colour"] != "undefined")
+            color = m["colour"];
+        
+        if (color == null) {
+            console.log("message struct missing both color and or colour property, aborting!")
             return ;
+        }
+        
+        if (typeof dmx.lights[m.light] == "undefined") {
+            console.log("universe has no light named:" + m.light + ", aborting!")
+            return ;
+        }
+        
+        light = dmx.lights[m.light];
+        
+        c = dmxchannel.read(dmx, light);
+        
+        Object.keys(c).forEach(function(prop, index, obj) {
+            if (typeof color[prop] !== "undefined")
+                obj[prop] = color[prop];
+        });
         
         if (typeof m.fade !== "undefined")
-            dmxpro.color(dmx, m.light, m.color.red, m.color.green, m.color.blue, m.fade)
+            dmxpro.color(dmx, m.light, c.red, c.green, c.blue, m.fade)
         else
-            dmxpro.color(dmx, m.light, m.color.red, m.color.green, m.color.blue)
+            dmxpro.color(dmx, m.light, c.red, c.green, c.blue)
     },
     // set light color, with optional fade time
     color: function(dmx, light_name, _red, _green, _blue, fade_time) {
