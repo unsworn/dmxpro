@@ -310,7 +310,7 @@ var dmxpro = {
     
                 Object.keys(c).forEach(function(prop, index, obj) {
                     if (typeof color[prop] !== "undefined")
-                        c[prop] = color[prop];
+                        c[prop] = (color[prop] * dmx.scale); 
                 });
     
                 if (typeof m.fade !== "undefined") {
