@@ -284,10 +284,10 @@ var dmxpro = {
     },
     // handle dmx pseudo message
     message: function(dmx, m) {
-        var light=null,color=null,c;
+        var light=null,color=null,c,ch;
         
-        if (typeof m.light == "undefined") {
-            console.log("message struct missing light property, aborting!")
+        if (typeof m.fixtures == "undefined") {
+            console.log("message struct missing fixtures property, aborting!")
             return ;
         }
         if (typeof m["color"] != "undefined")            
@@ -299,25 +299,29 @@ var dmxpro = {
             console.log("message struct missing both color and or colour property, aborting!")
             return ;
         }
+                
+        m.fixtures.forEach(function(light_name, index, obj) {
         
-        if (typeof dmx.lights[m.light] == "undefined") {
-            console.log("universe has no light named:" + m.light + ", aborting!")
-            return ;
-        }
-        
-        light = dmx.lights[m.light];
-        
-        c = dmxchannel.read(dmx, light);
-        
-        Object.keys(c).forEach(function(prop, index, obj) {
-            if (typeof color[prop] !== "undefined")
-                obj[prop] = color[prop];
+            if (typeof dmx.lights[light_name] !== "undefined") {
+            
+                light = dmx.lights[light_name];
+    
+                c = dmxchannel.read(dmx, light);
+    
+                Object.keys(c).forEach(function(prop, index, obj) {
+                    if (typeof color[prop] !== "undefined")
+                        obj[prop] = color[prop];
+                });
+    
+                if (typeof m.fade !== "undefined") {
+                    dmxpro.color(dmx, m.light, c.red, c.green, c.blue, m.fade)
+                } else {
+                    ch = dmxchannel.rgb(light, c.red, c.green, c.blue);
+                    dmxchannel.post(dmx, ch);                
+                }                
+            }
         });
-        
-        if (typeof m.fade !== "undefined")
-            dmxpro.color(dmx, m.light, c.red, c.green, c.blue, m.fade)
-        else
-            dmxpro.color(dmx, m.light, c.red, c.green, c.blue)
+        dmx.io.flush();
     },
     // set light color, with optional fade time
     color: function(dmx, light_name, _red, _green, _blue, fade_time) {
