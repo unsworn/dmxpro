@@ -8,8 +8,8 @@ var _fs  =require("fs"),
  * dmxlight, holds configuration for one rgb light source
  */
 var dmxlight = {
-    init: function(path) {
-        var light = JSON.parse(_fs.readFileSync(path));
+    init: function(data) {
+        var light = data;
         light.actions = []
         light.current = null
         return light;
@@ -215,9 +215,9 @@ var dmxpro = {
         };
     },
     // init universe and populate from dmx.json in path, big bang
-    init: function(dmx, path) {
+    init: function(dmx, conf) {
         var conf,light,light_path,dir,i;
-        conf = JSON.parse(_fs.readFileSync(path))
+
         if (dmx.io != null)
             throw "Can not setup dmxpro interface, already setup";
         dmx.io = new _dmx.io();
@@ -231,19 +231,17 @@ var dmxpro = {
             if (!dmx.io.open())
                 throw "Could not open device! (autoselect mode)";
         } 
-        if (typeof conf.colorspace !== "undefined") {
+        if (typeof conf.coloruspace !== "undefined") {
             dmx.colorspace = conf.colorspace;        
         }
         if (typeof conf.range !== "undefined") {
             dmx.scale = 1.0/conf.range;
         }
-        if (typeof conf.lights !== "undefined") {
-            light_path = _path.dirname(path) + "/" + conf.lights;
-            dir = _fs.readdirSync(light_path)
-            for (i=0 ; i < dir.length ; i++) {
-                light = dmxlight.init(light_path + "/" + dir[i])
-                if (typeof light.name !== "undefined")
-                    dmx.lights[light.name] = light
+        if (typeof conf.fixtures !== "undefined") {
+            for (i=0 ; i < conf.fixtures.length ; i++) {
+                light = dmxlight.init( conf.fixtures[i] )
+                if (typeof light.id !== "undefined")
+                    dmx.lights[light.id] = light
             }
             console.log("dmxpro.setup() " + Object.keys(dmx.lights).length + " lights in universe")
         }
@@ -300,11 +298,11 @@ var dmxpro = {
             return ;
         }
                 
-        m.fixtures.forEach(function(light_name, index, obj) {
+        m.fixtures.forEach(function(light_id, index, obj) {
         
-            if (typeof dmx.lights[light_name] !== "undefined") {
+            if (typeof dmx.lights[light_id] !== "undefined") {
             
-                light = dmx.lights[light_name];
+                light = dmx.lights[light_id];
     
                 c = dmxchannel.read(dmx, light);
     
@@ -315,14 +313,14 @@ var dmxpro = {
                 ch = dmxchannel.rgb(light, c.red, c.green, c.blue);
                 dmxchannel.post(dmx, ch);
             } else {
-                console.log("No light named " + light_name + " in universe");
+                console.log("No light with id " + light_id + " in universe");
             }
         });
         dmx.io.flush();
     },
     // set light color, with optional fade time
-    color: function(dmx, light_name, _red, _green, _blue, fade_time) {
-        var fade,c,red=_red*dmx.scale, green=_green*dmx.scale, blue=_blue*dmx.scale,light=dmx.lights[light_name]        
+    color: function(dmx, light_id, _red, _green, _blue, fade_time) {
+        var fade,c,red=_red*dmx.scale, green=_green*dmx.scale, blue=_blue*dmx.scale,light=dmx.lights[light_id]        
         if (typeof fade_time == "undefined" || dmx.interval == null) {   
             c = dmxchannel.rgb(light, red, green, blue);
             dmxchannel.post(dmx, c);
@@ -334,11 +332,11 @@ var dmxpro = {
         return ;
     },
     // set light intensity with current color, with optional fade time
-    intensity: function(dmx, light_name, _intensity, fade_time) {
-        var fade,i,intensity=_intensity*dmx.scale,light=dmx.lights[light_name]        
+    intensity: function(dmx, light_id, _intensity, fade_time) {
+        var fade,i,intensity=_intensity*dmx.scale,light=dmx.lights[light_id]        
         if (typeof light.map["intensity"] == "undefined") {
             i = dmxchannel.read(light)
-            return dmxpro.color(dmx, light_name, i.red * intensity, i.green * intensity, i.blue * intensity, fade_time);
+            return dmxpro.color(dmx, light_id, i.red * intensity, i.green * intensity, i.blue * intensity, fade_time);
         }        
         if (typeof fade_time == "undefined" || dmx.interval == null) {   
             i = dmxchannel.intensity(light, intensity)
