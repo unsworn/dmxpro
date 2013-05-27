@@ -18,7 +18,7 @@
 #include <sys/select.h>
 #include <fcntl.h>
 #include <dirent.h>
-#include "serial.h"
+#include "Serial.h"
 
 struct serialhandle_s {
     int fd;
