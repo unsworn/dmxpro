@@ -4,6 +4,7 @@
 #include <string>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 using namespace std;
 using namespace node;
