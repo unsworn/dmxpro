@@ -1,4 +1,4 @@
 {
-    "device": "/dev/cu.usbserial-EN129148",
+    "device": "/dev/ttyUSB0",
     "lights": "lights/"
 }

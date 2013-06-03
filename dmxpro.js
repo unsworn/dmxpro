@@ -215,6 +215,41 @@ var dmxpro = {
         };
     },
     // init universe and populate from dmx.json in path, big bang
+    initWithFile: function(dmx, path) {
+        var conf,light,light_path,dir,i;
+        conf = JSON.parse(_fs.readFileSync(path))
+        if (dmx.io != null)
+            throw "Can not setup dmxpro interface, already setup";
+        dmx.io = new _dmx.io();
+        // call native open, since device may not 
+        // be defined in config, we need to call
+        // open without args to get det autoselect behavior
+        if (typeof conf.device !== "undefined" && conf.device != "auto") {
+            if (!dmx.io.open(conf.device))
+                throw "Could not open device!";
+        } else {
+            if (!dmx.io.open())
+                throw "Could not open device! (autoselect mode)";
+        } 
+        if (typeof conf.colorspace !== "undefined") {
+            dmx.colorspace = conf.colorspace;        
+        }
+        if (typeof conf.range !== "undefined") {
+            dmx.scale = 1.0/conf.range;
+        }
+        if (typeof conf.lights !== "undefined") {
+            light_path = _path.dirname(path) + "/" + conf.lights;
+            dir = _fs.readdirSync(light_path)
+            for (i=0 ; i < dir.length ; i++) {
+                light = dmxlight.init(light_path + "/" + dir[i])
+                if (typeof light.name !== "undefined")
+                    dmx.lights[light.name] = light
+            }
+            console.log("dmxpro.setup() " + Object.keys(dmx.lights).length + " lights in universe")
+        }
+        return true
+    },
+    // init universe and populate from dmx config
     init: function(dmx, conf) {
         var conf,light,light_path,dir,i;
 
@@ -231,8 +266,8 @@ var dmxpro = {
             if (!dmx.io.open())
                 throw "Could not open device! (autoselect mode)";
         } 
-        if (typeof conf.coloruspace !== "undefined") {
-            dmx.colorspace = conf.colorspace;        
+        if (typeof conf.colourspace !== "undefined") {
+            dmx.colorspace = conf.colourspace;        
         }
         if (typeof conf.range !== "undefined") {
             dmx.scale = 1.0/conf.range;

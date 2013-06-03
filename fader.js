@@ -10,7 +10,7 @@ dmx = dmxpro.alloc()
 
 console.log("Starting fader")
 
-if (!dmxpro.init(dmx, __dirname + "/tests/data/dmx.json"))
+if (!dmxpro.initWithFile(dmx, __dirname + "/tests/data/dmx.json"))
     process.exit()
 
 dmxpro.start(dmx)
