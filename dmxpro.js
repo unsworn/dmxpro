@@ -239,9 +239,12 @@ var dmxpro = {
         }
         if (typeof conf.lights !== "undefined") {
             light_path = _path.dirname(path) + "/" + conf.lights;
+            console.log("loading " + light_path)
             dir = _fs.readdirSync(light_path)
             for (i=0 ; i < dir.length ; i++) {
-                light = dmxlight.init(light_path + "/" + dir[i])
+                var light_data = JSON.parse( _fs.readFileSync(light_path + "/" + dir[i]));
+                light = dmxlight.init(light_data)
+                console.log(light)
                 if (typeof light.name !== "undefined")
                     dmx.lights[light.name] = light
             }
