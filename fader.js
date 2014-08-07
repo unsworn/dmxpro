@@ -8,9 +8,9 @@ var dmxpro=require(__dirname + "/dmxpro.js"),
 
 dmx = dmxpro.alloc()
 
-console.log("Starting fader")
+console.log("\nStarting fader")
 
-if (!dmxpro.initWithFile(dmx, __dirname + "/tests/data/dmx.json"))
+if (!dmxpro.initWithFile(dmx, __dirname + "/tests/dmx.json"))
     process.exit()
 
 dmxpro.start(dmx)

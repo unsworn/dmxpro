@@ -1,0 +1,41 @@
+{
+  "device": "/dev/cu.usbserial-EN129148",
+  "colourspace": "rgb",
+  "range": 1,
+  "fixtures": [
+    {
+      "id": 1,
+      "map": {
+        "red": 1,
+        "green": 2,
+        "blue": 3
+      }
+    },
+    {
+      "id": 2,
+      "map": {
+        "red": 4,
+        "green": 5,
+        "blue": 6
+      }
+    }
+  ],
+  "groups": [
+    {
+      "id": "A",
+      "name": "Vänster",
+      "fixtures": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": "B",
+      "name": "Höger",
+      "fixtures": [
+        3,
+        4
+      ]
+    }
+  ]
+}
