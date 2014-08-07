@@ -1,12 +1,12 @@
 {
   "name": "dmxpro",
-  "description": "dmx light control",
-  "version": "0.1.1",
+  "description": "Dmx lighting control over serial port (Entec DMXPRO)",
+  "version": "0.1.2",
   "repository": {
     "type": "git",
     "url": "http://repos.uidev.se/dmxpro-node.git"
   },
-  "author": "Unsworn Industries AB (nodejs@uidev.se)",
+  "author": "Unsworn Industries (nodejs@uidev.se)",
   "main": "dmxpro.js",
   "directories": {
   },
