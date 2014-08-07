@@ -1,12 +1,12 @@
 {
   "name": "dmxpro",
   "description": "dmx light control",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": {
     "type": "git",
-    "url": "ssh://git@git.uidev.se/var/git/dmxpro-node.git"
+    "url": "http://repos.uidev.se/dmxpro-node.git"
   },
-  "author": "Nicklas Marelius (nicklas@unswornindustries.com)",
+  "author": "Unsworn Industries AB (nodejs@uidev.se)",
   "main": "dmxpro.js",
   "directories": {
   },
