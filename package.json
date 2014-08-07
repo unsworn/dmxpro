@@ -1,6 +1,6 @@
 {
   "name": "dmxpro",
-  "description": "Dmx lighting control over serial port (Entec DMXPRO)",
+  "description": "Dmx lighting control over serial port (ENTTEC USB PRO)",
   "version": "0.1.2",
   "repository": {
     "type": "git",
