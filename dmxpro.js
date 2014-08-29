@@ -268,6 +268,9 @@ var dmxpro = {
     }, // init   
 
     // start universe ticks
+    // does not play well with node 0.10.30
+    // flushes from tick and message / post collides
+    // alsp rename to enable_animation
     start: function(dmx) {
       if (dmx.interval == null) { 
         dmx.lasttick = dmxmain.time()
