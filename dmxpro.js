@@ -195,6 +195,8 @@ var dmxmain = {
       }
       dmx.io.flush();
       dmx.lasttick = now;
+      setTimeout(dmxmain.tick,  dmxpro.RATE*100, dmx);
+    
   }
 };
 
@@ -274,7 +276,7 @@ var dmxpro = {
     start: function(dmx) {
       if (dmx.interval == null) { 
         dmx.lasttick = dmxmain.time()
-        dmx.interval = setInterval(dmxmain.tick, dmxpro.RATE*1000, dmx);
+        dmxmain.tick(dmx);
         console.log("started!")
       }
     },
