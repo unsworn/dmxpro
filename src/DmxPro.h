@@ -1,7 +1,7 @@
 #ifndef DmxPro_H_
 #define DmxPro_H_
 
-#include <node.h>
+#include <node_object_wrap.h>
 #include <v8.h>
 
 #include "Serial.h"
@@ -15,33 +15,33 @@
 
 using namespace v8;
 
-class DmxPro : node::ObjectWrap {
+class DmxPro : public node::ObjectWrap {
 public:
-    static void init(Handle<Object> target);
+    static void init(Local<Object> target);
 
-    static Handle<Value> New     (const Arguments& args);
-    static Handle<Value> open    (const Arguments& args);
-    static Handle<Value> close   (const Arguments& args);
-    static Handle<Value> write   (const Arguments& args);
-    static Handle<Value> blackout(const Arguments& args);
-    static Handle<Value> set     (const Arguments& args);
-    static Handle<Value> get     (const Arguments& args);
-    static Handle<Value> queue   (const Arguments& args);
-    static Handle<Value> flush   (const Arguments& args);
-    static Handle<Value> wait    (const Arguments& args);
-    
+    static void New     (const FunctionCallbackInfo<Value>& args);
+    static void open    (const FunctionCallbackInfo<Value>& args);
+    static void close   (const FunctionCallbackInfo<Value>& args);
+    static void write   (const FunctionCallbackInfo<Value>& args);
+    static void blackout(const FunctionCallbackInfo<Value>& args);
+    static void set     (const FunctionCallbackInfo<Value>& args);
+    static void get     (const FunctionCallbackInfo<Value>& args);
+    static void queue   (const FunctionCallbackInfo<Value>& args);
+    static void flush   (const FunctionCallbackInfo<Value>& args);
+    static void wait    (const FunctionCallbackInfo<Value>& args);
+
 protected:
     ~DmxPro();
 
 private:
-    DmxPro(Handle<Object> wrapper);
-    static Persistent<FunctionTemplate> constructor_template;    
-    
+    DmxPro(Local<Object> target);
+    static Persistent<Function> constructor;
+
     bool drain();
-    
+
     unsigned char saved [DMX_UNIVERSE_SIZE];
     unsigned char state [DMX_UNIVERSE_SIZE];
-    
+
     bool          bo;
     serial_s*     port;
 };
