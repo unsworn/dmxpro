@@ -4,18 +4,14 @@
   "version": "0.2.0",
   "repository": {
     "type": "git",
-    "url": "http://repos.uidev.se/dmxpro-node.git"
+    "url": "https://github.com/unsworn/dmxpro"
   },
-  "author": "Unsworn Industries (nodejs@uidev.se)",
+  "author": "Unsworn",
   "main": "dmxpro.js",
   "directories": {
   },
   "dependencies": {
     "bindings" : "1.0.0"
-  },
-  "devDependencies": {
-  },
-  "scripts": {
   },
   "engines": {
     "node": ">= 0.6.1"
